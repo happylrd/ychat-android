@@ -2,7 +2,12 @@ package io.happylrd.common.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+
+import java.util.List;
+
+import butterknife.ButterKnife;
 
 public abstract class Activity extends AppCompatActivity {
 
@@ -35,7 +40,7 @@ public abstract class Activity extends AppCompatActivity {
     protected abstract int getContentLayoutId();
 
     protected void initWidget() {
-
+        ButterKnife.bind(this);
     }
 
     protected void initData() {
@@ -51,6 +56,18 @@ public abstract class Activity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        List<android.support.v4.app.Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null && fragments.size() > 0) {
+            for (Fragment fragment : fragments) {
+                if (fragment instanceof io.happylrd.common.app.Fragment) {
+                    if (((io.happylrd.common.app.Fragment) fragment).onBackPressed()) {
+                        return;
+                    }
+                }
+            }
+        }
+
         super.onBackPressed();
+        finish();
     }
 }
